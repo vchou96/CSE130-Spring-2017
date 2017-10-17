@@ -1,0 +1,68 @@
+-------------------------------------------------------------------------------
+-- DO NOT MODIFY THIS SEGMENT
+-------------------------------------------------------------------------------
+-- DO NOT MODIFY THIS SEGMENT
+-------------------------------------------------------------------------------
+
+let ZERO  = \f x -> x
+let ONE   = \f x -> f x
+let TWO   = \f x -> f (f x)
+let THREE = \f x -> f (f (f x))
+let FOUR  = \f x -> f (f (f (f x)))
+
+let SUC   = \n f x -> f (n f x)
+let ADD   = \n m -> n SUC m
+let MUL   = \n m -> n (ADD m) ZERO
+
+
+-------------------------------------------------------------------------------
+-- YOU SHOULD ONLY MODIFY THE TEXT BELOW, JUST THE PARTS MARKED AS COMMENTS
+-------------------------------------------------------------------------------
+
+eval suc_one :
+  SUC ONE
+  -- (a) fill in your reductions here
+  =d> (\n f x-> f (n f x)) ONE
+  =b> \f x-> f (ONE f x)
+  =d> \f x->f((\f x -> f x) f x)
+  =d> \f x->f((\f -> (\x -> f x)) f x)
+  =a> \f1 x->f1((\f -> (\x -> f x)) f1 x)
+  =b> \f1 x->f1((\x -> f1 x) x)
+  =b> \f1 x->f1(f1 x)
+  =a> \f x->f(f x)
+  =d> TWO
+
+eval add_zero_zero :
+  ADD ZERO ZERO
+  -- (b) fill in your reductions here
+  =d> (\n m -> n SUC m) ZERO ZERO
+  =b> (\m -> ZERO SUC m) ZERO
+  =b> (ZERO SUC ZERO)
+  =d> (\f x -> x) SUC ZERO
+  =d> (\f -> (\x->x)) SUC ZERO 
+  =b> (\x->x) ZERO 
+  =b> ZERO
+
+eval add_two_two :
+  ADD TWO TWO
+  -- (c) fill in your reductions here
+  =d> (\n m -> n SUC m) TWO TWO
+  =b> (\m -> TWO SUC m) TWO
+  =b> (TWO SUC TWO)
+  =d> (\f x -> f (f x)) SUC TWO
+  =d> (\f -> (\x-> f (f x))) SUC TWO
+  =b> (\x -> SUC(SUC x))TWO 
+  =b> SUC(SUC TWO)
+  =d> (\n f x -> f (n f x)) (SUC TWO)
+  =b> (\f x -> f (SUC TWO f x)) 
+  =d> (\f x -> f ((\n f x -> f (n f x)) TWO f x))
+  =b> (\f x -> f ((\f x -> f (TWO f x)) f x))
+  =a> (\f1 x -> f1 ((\f x -> f (TWO f x)) f1 x))  
+  =b> (\f1 x -> f1 ((\x -> f1 (TWO f1 x)) x))  
+  =b> \f1 x -> f1 (f1 (TWO f1 x))
+  =d> \f1 x -> f1 (f1 ((\f x -> f (f x)) f1 x))
+  =d> \f1 x -> f1 (f1 ((\f -> (\x -> f (f x))) f1 x))
+  =b> \f1 x -> f1 (f1 ((\x -> f1 (f1 x)) x))
+  =b> \f1 x -> f1 (f1 (f1 (f1 x)))
+  =a> \f x -> f (f (f (f x)))
+  =d> FOUR
